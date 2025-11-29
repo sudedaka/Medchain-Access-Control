@@ -66,12 +66,17 @@ export async function getDoctorRequests(doctorId: string) {
 }
 
 // Lab uploads result
-export async function uploadLabResult(patientId: string, testType: string, file: File) {
+export async function uploadLabResult(
+  patientId: string,
+  testType: string,
+  files: File[]
+) {
   const formData = new FormData();
   formData.append("patientId", patientId);
   formData.append("testType", testType);
-  formData.append("file", file);
-  
+
+  files.forEach((file) => formData.append("files", file)); // multiple files
+
   const response = await fetch("http://127.0.0.1:8000/api/lab/upload", {
     method: "POST",
     body: formData,

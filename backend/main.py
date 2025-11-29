@@ -64,7 +64,7 @@ app.add_middleware(
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Ensures backend always returns CORS headers even on 500 errors."""
-    print("🔥 Backend crashed:", exc)
+    print(" Backend crashed:", exc)
     return JSONResponse(
         status_code=500,
         content={"detail": f"Internal Server Error: {str(exc)}"},
@@ -91,39 +91,47 @@ def root():
 
 # Upload lab result
 @app.post("/api/lab/upload")
-async def upload_file(
+async def upload_lab_result(
     patientId: str = Form(...),
     testType: str = Form(...),
-    file: UploadFile = File(...)
+    files: list[UploadFile] = File(...)
 ):
-    safe_test = testType.replace(" ", "_")
-    filename = f"{patientId}_{safe_test}_{file.filename}"
+    # Prepare directory
+    if not os.path.exists("uploads"):
+        os.makedirs("uploads")
 
-    save_path = os.path.join(UPLOAD_DIR, filename)
+    file_urls = []
 
-    with open(save_path, "wb") as f:
-        f.write(await file.read())
+    for file in files:
+        safe_test = testType.replace(" ", "_")
+        filename = f"{patientId}_{safe_test}_{file.filename}"
+        save_path = os.path.join("uploads", filename)
 
-    image_url = f"http://127.0.0.1:8000/uploads/{filename}"
+        with open(save_path, "wb") as f:
+            f.write(await file.read())
 
-    # update medical.json
-    medical = json_load(FILES["medical"])
+        file_urls.append(f"http://127.0.0.1:8000/uploads/{filename}")
+
+    # Update medical.json
+    medical = load_json(FILES["medical"])
+
     if patientId not in medical:
         medical[patientId] = {"labs": []}
 
     medical[patientId]["labs"].append({
         "test": testType,
         "date": now(),
-        "result": "see-image",
-        "images": [image_url]
+        "result": "see-images",
+        "images": file_urls
     })
 
-    json_save(FILES["medical"], medical)
+    save_json(FILES["medical"], medical)
 
     return {
         "message": "Lab result uploaded",
-        "imageURL": image_url
+        "images": file_urls
     }
+
 
 
 

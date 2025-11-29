@@ -1,8 +1,13 @@
 {
-    "patient1": {
-        "labs": [
-            { "test": "CBC", "result": "Normal" }
-        ],
-        "conditions": ["Hypertension"]
-    }
+  "patient1": {
+    "conditions": ["Hypertension"],
+    "labs": [
+      {
+        "test": "CBC",
+        "result": "Normal",
+        "date": "2025-02-01T14:24",
+        "images": []
+      }
+    ]
+  }
 }
