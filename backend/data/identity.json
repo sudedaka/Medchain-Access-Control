@@ -1,0 +1,7 @@
+{
+    "patient1": {
+        "name": "John Doe",
+        "age": 33,
+        "email": "john@example.com"
+    }
+}

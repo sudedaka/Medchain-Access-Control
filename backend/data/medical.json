@@ -1,0 +1,8 @@
+{
+    "patient1": {
+        "labs": [
+            { "test": "CBC", "result": "Normal" }
+        ],
+        "conditions": ["Hypertension"]
+    }
+}

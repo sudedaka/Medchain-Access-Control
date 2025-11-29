@@ -8,11 +8,7 @@ const LabDashboard: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedTest, setSelectedTest] = useState('Genomic Sequencing');
 
-  const testOptions = [
-    'Genomic Sequencing',
-    'Blood Analysis',
-    'Pathology Report'
-  ];
+  const testOptions = ['Genomic Sequencing', 'Blood Analysis', 'Pathology Report' ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 relative overflow-hidden">
