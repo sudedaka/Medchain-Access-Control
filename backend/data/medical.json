@@ -1,13 +1,24 @@
 {
-  "patient1": {
-    "conditions": ["Hypertension"],
-    "labs": [
-      {
-        "test": "CBC",
-        "result": "Normal",
-        "date": "2025-02-01T14:24",
-        "images": []
-      }
-    ]
-  }
+    "patient1": {
+        "conditions": [
+            "Tomography Scan"
+        ],
+        "labs": [
+            {
+                "test": "tomogrophy scan",
+                "date": "2025-11-29T19:46+00:00",
+                "result": "see-images",
+                "images": [
+                    "http://localhost:8000/uploads/patient1_tomogrophy_scan_tomogrophy2.jpg",
+                    "http://localhost:8000/uploads/patient1_tomogrophy_scan_tomogrophy.png"
+                ]
+            }
+        ]
+    },
+    "patient2": {
+        "conditions": [
+            "Asthma"
+        ],
+        "labs": []
+    }
 }

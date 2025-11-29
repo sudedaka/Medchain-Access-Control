@@ -4,7 +4,7 @@ export async function createRequest(
   patientId: string,
   purpose: string
 ) {
-  const response = await fetch("http://127.0.0.1:8000/api/requests", {
+  const response = await fetch("http://localhost:8000/api/requests", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ doctorId, patientId, purpose }),
@@ -16,7 +16,7 @@ export async function createRequest(
 // Patient pending requests
 export async function getPendingRequests(patientId: string) {
   const response = await fetch(
-    `http://127.0.0.1:8000/api/requests/pending/${patientId}`
+    `http://localhost:8000/api/requests/pending/${patientId}`
   );
   return response.json();
 }
@@ -24,7 +24,7 @@ export async function getPendingRequests(patientId: string) {
 // Patient approves request
 export async function approveRequest(requestId: string) {
   const response = await fetch(
-    `http://127.0.0.1:8000/api/requests/${requestId}/approve`,
+    `http://localhost:8000/api/requests/${requestId}/approve`,
     { method: "POST" }
   );
 
@@ -34,7 +34,7 @@ export async function approveRequest(requestId: string) {
 // Patient rejects request
 export async function rejectRequest(requestId: string) {
   const response = await fetch(
-    `http://127.0.0.1:8000/api/requests/${requestId}/reject`,
+    `http://localhost:8000/api/requests/${requestId}/reject`,
     { method: "POST" }
   );
 
@@ -44,7 +44,7 @@ export async function rejectRequest(requestId: string) {
 // Doctor fetches data
 export async function getAuthorizedData(patientId: string, doctorId: string) {
   const response = await fetch(
-    `http://127.0.0.1:8000/api/patient/${patientId}/data?doctorId=${doctorId}`
+    `http://localhost:8000/api/patient/${patientId}/data?doctorId=${doctorId}`
   );
 
   return response.json();
@@ -53,14 +53,14 @@ export async function getAuthorizedData(patientId: string, doctorId: string) {
 // Audit log
 export async function getAudit(patientId: string) {
   const response = await fetch(
-    `http://127.0.0.1:8000/api/audit/${patientId}`
+    `http://localhost:8000/api/audit/${patientId}`
   );
   return response.json();
 }
 
 export async function getDoctorRequests(doctorId: string) {
   const response = await fetch(
-    `http://127.0.0.1:8000/api/requests/doctor/${doctorId}`
+    `http://localhost:8000/api/requests/doctor/${doctorId}`
   );
   return response.json();
 }
@@ -77,7 +77,7 @@ export async function uploadLabResult(
 
   files.forEach((file) => formData.append("files", file)); // multiple files
 
-  const response = await fetch("http://127.0.0.1:8000/api/lab/upload", {
+  const response = await fetch("http://localhost:8000/api/lab/upload", {
     method: "POST",
     body: formData,
   });

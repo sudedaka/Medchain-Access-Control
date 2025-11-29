@@ -1,7 +1,12 @@
 {
-    "patient1": {
-        "name": "John Doe",
-        "age": 33,
-        "email": "john@example.com"
-    }
+  "patient1": {
+    "name": "John Doe",
+    "age": 34,
+    "gender": "Male"
+  },
+  "patient2": {
+    "name": "Emily Carter",
+    "age": 29,
+    "gender": "Female"
+  }
 }

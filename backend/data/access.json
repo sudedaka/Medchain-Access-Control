@@ -2,37 +2,7 @@
     {
         "doctorId": "doctor1",
         "patientId": "patient1",
-        "approvedAt": "2025-11-29T08:13:46.233876",
-        "expiresAt": null
-    },
-    {
-        "doctorId": "doctor1",
-        "patientId": "patient1",
-        "approvedAt": "2025-11-29T08:21:51.823985",
-        "expiresAt": null
-    },
-    {
-        "doctorId": "doctor1",
-        "patientId": "patient1",
-        "approvedAt": "2025-11-29T08:29:19.075310",
-        "expiresAt": null
-    },
-    {
-        "doctorId": "doctor1",
-        "patientId": "patient1",
-        "approvedAt": "2025-11-29T08:35:40.649423",
-        "expiresAt": null
-    },
-    {
-        "doctorId": "doctor1",
-        "patientId": "patient1",
-        "approvedAt": "2025-11-29T08:40:55.572104",
-        "expiresAt": null
-    },
-    {
-        "doctorId": "doctor1",
-        "patientId": "patient1",
-        "approvedAt": "2025-11-29T11:37:12.315022",
+        "approvedAt": "2025-11-29T19:46+00:00",
         "expiresAt": null
     }
 ]

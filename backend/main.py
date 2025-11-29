@@ -1,38 +1,37 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-import json
-import os
-from datetime import datetime
-from zoneinfo import ZoneInfo
+import json, os
+from datetime import datetime, timezone
 
-
-# ----------------------------
-# Helpers
-# ----------------------------
+# ---- PATHS ----
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# ---- APP ----
+app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ---- HELPERS ----
 def now():
-    return datetime.now(ZoneInfo("Europe/Istanbul")).isoformat(timespec="minutes")
-
+    return datetime.now(timezone.utc).isoformat(timespec="minutes")
 
 def json_load(name):
-    path = os.path.join(DATA_DIR, name)
-    with open(path, "r") as f:
+    with open(os.path.join(DATA_DIR, name)) as f:
         return json.load(f)
 
-
 def json_save(name, data):
-    path = os.path.join(DATA_DIR, name)
-    with open(path, "w") as f:
+    with open(os.path.join(DATA_DIR, name), "w") as f:
         json.dump(data, f, indent=4)
-
 
 FILES = {
     "identity": "identity.json",
@@ -42,154 +41,102 @@ FILES = {
     "audit": "audit.json",
 }
 
-
-
-# ----------------------------
-# App init + CORS
-# ----------------------------
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # DEV MODE: allow all
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# ----------------------------
-# GLOBAL ERROR HANDLER (CRITICAL)
-# ----------------------------
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    """Ensures backend always returns CORS headers even on 500 errors."""
-    print(" Backend crashed:", exc)
-    return JSONResponse(
-        status_code=500,
-        content={"detail": f"Internal Server Error: {str(exc)}"},
-        headers={"Access-Control-Allow-Origin": "*"},
-    )
-
-
-
-# ----------------------------
-# STATIC FILES
-# ----------------------------
+# Serve uploads folder
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-
-
-# ----------------------------
-# ROUTES
-# ----------------------------
-@app.get("/")
-def root():
-    return {"message": "Backend OK"}
-
-
-
-# Upload lab result
+# ============================================================
+#                     LAB UPLOAD ENDPOINT
+# ============================================================
 @app.post("/api/lab/upload")
 async def upload_lab_result(
     patientId: str = Form(...),
     testType: str = Form(...),
     files: list[UploadFile] = File(...)
 ):
-    # Prepare directory
-    if not os.path.exists("uploads"):
-        os.makedirs("uploads")
+    print("UPLOAD RECEIVED", patientId, testType)
 
-    file_urls = []
-
+    urls = []
     for file in files:
-        safe_test = testType.replace(" ", "_")
-        filename = f"{patientId}_{safe_test}_{file.filename}"
-        save_path = os.path.join("uploads", filename)
+        safe_name = f"{patientId}_{testType.replace(' ','_')}_{file.filename}"
+        path = os.path.join(UPLOAD_DIR, safe_name)
 
-        with open(save_path, "wb") as f:
+        with open(path, "wb") as f:
             f.write(await file.read())
 
-        file_urls.append(f"http://127.0.0.1:8000/uploads/{filename}")
+        urls.append(f"http://localhost:8000/uploads/{safe_name}")
 
-    # Update medical.json
-    medical = load_json(FILES["medical"])
+    med = json_load(FILES["medical"])
+    if patientId not in med:
+        med[patientId] = {"labs": []}
 
-    if patientId not in medical:
-        medical[patientId] = {"labs": []}
-
-    medical[patientId]["labs"].append({
+    med[patientId]["labs"].append({
         "test": testType,
         "date": now(),
         "result": "see-images",
-        "images": file_urls
+        "images": urls,
     })
 
-    save_json(FILES["medical"], medical)
+    json_save(FILES["medical"], med)
 
-    return {
-        "message": "Lab result uploaded",
-        "images": file_urls
-    }
+    print("UPLOAD SUCCESSFUL")
+    return {"ok": True, "images": urls}
 
-
-
-
-# ----------------------------
-# The rest of your existing CRUD routes
-# ----------------------------
+# ============================================================
+#                     REQUEST SYSTEM
+# ============================================================
 @app.post("/api/requests")
 def create_request(payload: dict):
-    requests = json_load(FILES["requests"])
+    reqs = json_load(FILES["requests"])
 
-    new_request = {
-        "id": f"req_{len(requests)+1}",
+    new_req = {
+        "id": f"req_{len(reqs)+1}",
         "doctorId": payload["doctorId"],
         "patientId": payload["patientId"],
-        "purpose": payload.get("purpose", "medical_review"),
+        "purpose": payload.get("purpose", ""),
         "status": "pending",
-        "createdAt": datetime.utcnow().isoformat()
+        "createdAt": now()
     }
 
-    requests.append(new_request)
-    json_save(FILES["requests"], requests)
+    reqs.append(new_req)
+    json_save(FILES["requests"], reqs)
 
+    # audit log
     audit = json_load(FILES["audit"])
     audit.append({
         "event": "REQUEST_CREATED",
-        "requestId": new_request["id"],
-        "doctorId": payload["doctorId"],
-        "patientId": payload["patientId"],
-        "timestamp": datetime.utcnow().isoformat()
+        "requestId": new_req["id"],
+        "doctorId": new_req["doctorId"],
+        "patientId": new_req["patientId"],
+        "timestamp": now()
     })
     json_save(FILES["audit"], audit)
 
-    return {"request": new_request}
+    return {"request": new_req}
 
 
 @app.get("/api/requests/pending/{patientId}")
 def pending_requests(patientId: str):
-    requests = json_load(FILES["requests"])
-    return {"pending": [r for r in requests if r["patientId"] == patientId and r["status"] == "pending"]}
+    reqs = json_load(FILES["requests"])
+    return {"pending": [r for r in reqs if r["patientId"] == patientId and r["status"] == "pending"]}
 
 
 @app.post("/api/requests/{request_id}/approve")
-def approve_request(request_id: str):
-    requests = json_load(FILES["requests"])
+def approve(request_id: str):
+    reqs = json_load(FILES["requests"])
     access = json_load(FILES["access"])
     audit = json_load(FILES["audit"])
 
-    target = next((r for r in requests if r["id"] == request_id), None)
-    if not target:
+    req = next((r for r in reqs if r["id"] == request_id), None)
+    if not req:
         raise HTTPException(404, "Request not found")
 
-    target["status"] = "approved"
-    json_save(FILES["requests"], requests)
+    req["status"] = "approved"
+    json_save(FILES["requests"], reqs)
 
     access.append({
-        "doctorId": target["doctorId"],
-        "patientId": target["patientId"],
-        "approvedAt": datetime.utcnow().isoformat(),
+        "doctorId": req["doctorId"],
+        "patientId": req["patientId"],
+        "approvedAt": now(),
         "expiresAt": None
     })
     json_save(FILES["access"], access)
@@ -197,40 +144,54 @@ def approve_request(request_id: str):
     audit.append({
         "event": "REQUEST_APPROVED",
         "requestId": request_id,
-        "doctorId": target["doctorId"],
-        "patientId": target["patientId"],
-        "timestamp": datetime.utcnow().isoformat()
+        "doctorId": req["doctorId"],
+        "patientId": req["patientId"],
+        "timestamp": now()
     })
     json_save(FILES["audit"], audit)
 
-    return {"message": "Approved"}
+    return {"ok": True}
 
 
-
-@app.get("/api/audit/{patientId}")
-def get_audit(patientId: str):
+@app.post("/api/requests/{request_id}/reject")
+def reject(request_id: str):
+    reqs = json_load(FILES["requests"])
     audit = json_load(FILES["audit"])
-    return {"audit": [x for x in audit if x["patientId"] == patientId]}
+
+    req = next((r for r in reqs if r["id"] == request_id), None)
+    if not req:
+        raise HTTPException(404, "Not found")
+
+    req["status"] = "rejected"
+    json_save(FILES["requests"], reqs)
+
+    audit.append({
+        "event": "REQUEST_REJECTED",
+        "requestId": request_id,
+        "doctorId": req["doctorId"],
+        "patientId": req["patientId"],
+        "timestamp": now()
+    })
+    json_save(FILES["audit"], audit)
+
+    return {"ok": True}
 
 
 @app.get("/api/requests/doctor/{doctorId}")
-def doctor_reqs(doctorId: str):
-    req = json_load(FILES["requests"])
-    return {"requests": [r for r in req if r["doctorId"] == doctorId]}
+def doctor_requests(doctorId: str):
+    reqs = json_load(FILES["requests"])
+    return {"requests": [r for r in reqs if r["doctorId"] == doctorId]}
 
-
-
+# ============================================================
+#                     PATIENT DATA
+# ============================================================
 @app.get("/api/patient/{pid}/data")
 def get_patient_data(pid: str, doctorId: str):
     identity = json_load(FILES["identity"])
     medical = json_load(FILES["medical"])
     access = json_load(FILES["access"])
 
-    allowed = any(
-        a["doctorId"] == doctorId and a["patientId"] == pid
-        for a in access
-    )
-
+    allowed = any(a["doctorId"] == doctorId and a["patientId"] == pid for a in access)
     if not allowed:
         raise HTTPException(403, "Access denied")
 
@@ -238,3 +199,9 @@ def get_patient_data(pid: str, doctorId: str):
         "identity": identity.get(pid, {}),
         "medical": medical.get(pid, {})
     }
+
+
+@app.get("/api/audit/{patientId}")
+def get_audit(patientId: str):
+    audit = json_load(FILES["audit"])
+    return {"audit": [a for a in audit if a["patientId"] == patientId]}

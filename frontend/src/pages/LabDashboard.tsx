@@ -122,37 +122,42 @@ const LabDashboard: React.FC = () => {
             </div>
 
             {/* FILE UPLOAD BOX */}
-            <label className="border-2 border-dashed border-slate-600 rounded-2xl p-12 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-800/50 hover:border-purple-500/50 transition-all cursor-pointer group">
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                onChange={(e) =>
-                  setSelectedFiles(Array.from(e.target.files || []))
-                }
-              />
+           <label
+          htmlFor="fileInput"
+          className="border-2 border-dashed border-slate-600 rounded-2xl p-12 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-800/50 hover:border-purple-500/50 transition-all cursor-pointer group"
+        >
+          <input
+            id="fileInput"
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) =>
+              setSelectedFiles(Array.from(e.target.files || []))
+            }
+          />
 
-              <div className="p-4 bg-slate-800 rounded-full mb-4 group-hover:scale-110 transition-transform">
-                <Upload className="w-8 h-8 text-purple-400" />
-              </div>
+          <div className="p-4 bg-slate-800 rounded-full mb-4 group-hover:scale-110 transition-transform">
+            <Upload className="w-8 h-8 text-purple-400" />
+          </div>
 
-              {selectedFiles.length === 0 ? (
-                <>
-                  <span className="text-sm font-medium">
-                    Drag & drop or click to upload files
-                  </span>
-                  <span className="text-xs text-slate-600 mt-2">
-                    Supports multiple PNG / JPG / PDF files
-                  </span>
-                </>
-              ) : (
-                <div className="mt-2 text-purple-300 text-sm space-y-1">
-                  {selectedFiles.map((file) => (
-                    <div key={file.name}>• {file.name}</div>
-                  ))}
-                </div>
-              )}
-            </label>
+          {selectedFiles.length === 0 ? (
+            <>
+              <span className="text-sm font-medium">
+                Drag & drop or click to upload files
+              </span>
+              <span className="text-xs text-slate-600 mt-2">
+                Supports multiple PNG / JPG / PDF files
+              </span>
+            </>
+          ) : (
+            <div className="mt-2 text-purple-300 text-sm space-y-1">
+              {selectedFiles.map((file) => (
+                <div key={file.name}>• {file.name}</div>
+              ))}
+            </div>
+          )}
+        </label>
+
 
             {/* SUCCESS MESSAGE */}
             {uploadSuccess && (
