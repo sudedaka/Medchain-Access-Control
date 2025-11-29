@@ -64,3 +64,18 @@ export async function getDoctorRequests(doctorId: string) {
   );
   return response.json();
 }
+
+// Lab uploads result
+export async function uploadLabResult(patientId: string, testType: string, file: File) {
+  const formData = new FormData();
+  formData.append("patientId", patientId);
+  formData.append("testType", testType);
+  formData.append("file", file);
+  
+  const response = await fetch("http://127.0.0.1:8000/api/lab/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  return response.json();
+}
