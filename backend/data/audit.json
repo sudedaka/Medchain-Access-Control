@@ -1,16 +1,30 @@
 [
-     {
+    {
         "event": "REQUEST_CREATED",
-        "requestId": "req_2",
+        "requestId": "0403b20f-30dc-440a-b569-f0bafdcb4fb8",
         "doctorId": "doctor1",
         "patientId": "PID01",
-        "timestamp": "2025-12-02T16:22+00:00"
+        "timestamp": "2025-12-03T22:40+00:00"
     },
     {
         "event": "REQUEST_APPROVED",
-        "requestId": "req_2",
+        "requestId": "0403b20f-30dc-440a-b569-f0bafdcb4fb8",
         "doctorId": "doctor1",
         "patientId": "PID01",
-        "timestamp": "2025-12-02T16:22+00:00"
+        "timestamp": "2025-12-03T22:40+00:00"
+    },
+    {
+        "event": "REQUEST_CREATED",
+        "requestId": "bece69ea-4714-4024-bfd7-bde4ff83a0f8",
+        "doctorId": "doctor1",
+        "patientId": "PID02",
+        "timestamp": "2025-12-03T22:42+00:00"
+    },
+    {
+        "event": "REQUEST_APPROVED",
+        "requestId": "bece69ea-4714-4024-bfd7-bde4ff83a0f8",
+        "doctorId": "doctor1",
+        "patientId": "PID02",
+        "timestamp": "2025-12-03T22:42+00:00"
     }
 ]

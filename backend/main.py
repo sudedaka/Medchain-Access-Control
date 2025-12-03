@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import json, os
+import uuid     #creates unique IDs for requests
 from datetime import datetime, timezone
 
 # ---- PATHS ----
@@ -273,7 +274,7 @@ def create_request(payload: dict):
     reqs = json_load(FILES["requests"])
 
     new_req = {
-        "id": f"req_{len(reqs)+1}",
+        "id": str(uuid.uuid4()),
         "doctorId": payload["doctorId"],
         "patientId": payload["patientId"],
         "purpose": payload.get("purpose", ""),
