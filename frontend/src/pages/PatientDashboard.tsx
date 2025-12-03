@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight} from 'lucide-react';
 import React, { useEffect, useState } from "react";
-import {  getPendingRequests,  approveRequest,  rejectRequest,  getAudit} from "../../services/api";
+import {  getPendingRequests,  approveRequest,  rejectRequest,  getAudit, getAuthorizedData} from "../../services/api";
 
 // --- Event Translator ---
 function translateEvent(event: string) {
@@ -76,6 +76,7 @@ const PatientDashboard: React.FC = () => {
   // State
   const [pending, setPending] = useState<any[]>([]);
   const [audit, setAudit] = useState<any[]>([]);
+  const [healthData, setHealthData] = useState<any>(null);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,14 +89,23 @@ const PatientDashboard: React.FC = () => {
   const [selectedReq, setSelectedReq] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Load pending + audit logs
+  // Load pending + audit logs + health data
   useEffect(() => {
     async function load() {
       const pendingData = await getPendingRequests(patientId);
       const auditData = await getAudit(patientId);
 
       setPending(pendingData.pending);
-      setAudit(auditData.audit.reverse()); // newest first
+      setAudit((auditData?.audit || []).reverse());
+
+
+      // Fetch own health data
+      try {
+        const data = await getAuthorizedData(patientId, patientId);
+        setHealthData(data);
+      } catch (err) {
+        console.log("Health data not available or restricted");
+      }
     }
     load();
   }, [patientId]);
@@ -162,6 +172,9 @@ const PatientDashboard: React.FC = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+  const identity = healthData?.identity || {};
+  const medical = healthData?.medical || {};
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 relative overflow-hidden font-sans">
 
@@ -191,64 +204,143 @@ const PatientDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Pending Requests */}
-          <div className="lg:col-span-1">
+          {/* Left Column */}
+          <div className="lg:col-span-1 space-y-8">
 
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <Bell className="w-5 h-5 mr-2 text-yellow-500" />
-              Pending Actions
-            </h3>
+            {/* My Health Summary */}
+            {healthData && (
+              <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700">
+                <h3 className="text-lg font-semibold text-white flex items-center mb-5">
+                  <User className="w-5 h-5 mr-2 text-teal-400" />
+                  My Health Summary
+                </h3>
 
-            <div className="space-y-4">
-
-              {pending.length === 0 && (
-                <div className="p-6 bg-slate-800/30 rounded-2xl border border-slate-700 text-center">
-                  <p className="text-slate-400 text-sm">No pending requests.</p>
-                </div>
-              )}
-
-              {pending.map(req => (
-                <div
-                  key={req.id}
-                  className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-3xl border border-yellow-500/30 shadow-lg hover:bg-slate-800/70 transition-all"
-                >
-                  <div className="absolute top-0 right-0 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-bold rounded-bl-xl border-b border-l border-yellow-500/20">
-                    ACTION REQUIRED
+                <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                  <div className="bg-slate-900/40 p-3 rounded-xl">
+                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Age</p>
+                    <p className="text-white font-medium">{identity.age || '-'}</p>
+                  </div>
+                  <div className="bg-slate-900/40 p-3 rounded-xl">
+                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Sex</p>
+                    <p className="text-white font-medium">{identity.sex || '-'}</p>
                   </div>
 
-                  <div className="mt-4 mb-4">
-                    <p className="text-slate-400 text-xs uppercase font-semibold mb-2">
-                      Requesting Physician
+                  <div className="bg-slate-900/40 p-3 rounded-xl">
+                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Height</p>
+                    <p className="text-white font-medium">{identity.height ? `${identity.height} cm` : '-'}</p>
+                  </div>
+
+                  <div className="bg-slate-900/40 p-3 rounded-xl">
+                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Weight</p>
+                    <p className="text-white font-medium">{identity.weight ? `${identity.weight} kg` : '-'}</p>
+                  </div>
+                </div>
+
+                {/* Allergies */}
+                {medical.allergies && medical.allergies.length > 0 && (
+                  <div className="mb-6">
+                    <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2 flex items-center">
+                      <AlertTriangle className="w-3 h-3 mr-1.5 text-red-400" /> Allergies
                     </p>
-                    <p className="text-white font-medium text-lg">{req.doctorId}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {medical.allergies.map((a: string, i: number) => (
+                        <span key={i} className="px-2.5 py-1 bg-red-500/10 border border-red-500/20 rounded-md text-red-300 text-xs font-medium">
+                          {a}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                )}
 
-                  <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 mb-6">
-                    <p className="text-slate-400 text-xs mb-2">Requested Data:</p>
-                    <span className="text-xs bg-slate-700 text-slate-200 px-2 py-1 rounded border border-slate-600">
-                      {req.purpose}
-                    </span>
+                {/* Conditions */}
+                {medical.conditions && medical.conditions.length > 0 && (
+                  <div className="mb-6">
+                    <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2">Conditions</p>
+                    <div className="flex flex-wrap gap-2">
+                      {medical.conditions.map((c: string, i: number) => (
+                        <span key={i} className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 rounded-md text-blue-300 text-xs font-medium">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                )}
 
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => handleOpenApproveModal(req)}
-                      className="flex-1 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-medium text-sm flex items-center justify-center shadow-lg"
-                    >
-                      <Check className="w-4 h-4 mr-1.5" /> Approve
-                    </button>
-
-                    <button
-                      onClick={() => {  setSelectedRejectId(req.id);  setActiveModal('deny');}}
-                      className="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl font-medium text-sm flex items-center justify-center border border-slate-600"
-                    >
-                      <X className="w-4 h-4 mr-1.5" /> Deny
-                    </button>
+                {/* Medications */}
+                {medical.medications && medical.medications.length > 0 && (
+                  <div>
+                    <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2">Medications</p>
+                    <ul className="space-y-1.5">
+                      {medical.medications.map((m: string, i: number) => (
+                        <li key={i} className="text-slate-300 text-xs pl-2 border-l-2 border-slate-600">
+                          {m}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-              ))}
+                )}
+              </div>
+            )}
 
+            {/* Pending Requests Section */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Bell className="w-5 h-5 mr-2 text-yellow-500" />
+                Pending Actions
+              </h3>
+
+              <div className="space-y-4">
+
+                {pending.length === 0 && (
+                  <div className="p-6 bg-slate-800/30 rounded-2xl border border-slate-700 text-center">
+                    <p className="text-slate-400 text-sm">No pending requests.</p>
+                  </div>
+                )}
+
+                {pending.map(req => (
+                  <div
+                    key={req.id}
+                    className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-3xl border border-yellow-500/30 shadow-lg hover:bg-slate-800/70 transition-all relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-[10px] font-bold uppercase tracking-wider rounded-bl-xl border-b border-l border-yellow-500/20">
+                      Action Required
+                    </div>
+
+                    <div className="mt-2 mb-4">
+                      <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">
+                        Requesting Physician
+                      </p>
+                      <p className="text-white font-medium text-lg">{req.doctorId}</p>
+                    </div>
+
+                    <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 mb-5">
+                      <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">Purpose</p>
+                      <span className="text-xs text-slate-200 leading-relaxed block">
+                        {req.purpose}
+                      </span>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => handleOpenApproveModal(req)}
+                        className="flex-1 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg font-medium text-xs flex items-center justify-center shadow-lg transition-colors"
+                      >
+                        <Check className="w-3.5 h-3.5 mr-1.5" /> Approve
+                      </button>
+
+                      <button
+                        onClick={() => {  setSelectedRejectId(req.id);  setActiveModal('deny');}}
+                        className="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg font-medium text-xs flex items-center justify-center border border-slate-600 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5 mr-1.5" /> Deny
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+              </div>
             </div>
+
           </div>
 
           {/* Right Column – Audit Log */}

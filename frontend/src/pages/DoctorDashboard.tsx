@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 import {
   ArrowLeft,  Stethoscope,  FileSearch,  Activity,  FileText,  Clock,  CheckCircle,  AlertCircle,  X,  Loader2,
-  Search,  Database,  Lock,  Microscope,  ClipboardList,  TestTube,  ChevronLeft,  ChevronRight,  ExternalLink } from 'lucide-react';
+  Search,  Database,  Lock,  Microscope,  ClipboardList,  TestTube,  ChevronLeft,  ChevronRight,  ExternalLink, User, Ruler, Weight
+} from 'lucide-react';
 
 import {
   createRequest,
@@ -32,7 +33,8 @@ const Modal: React.FC<{
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-}> = ({ isOpen, onClose, title, children }) => {
+  maxWidth?: string; // Added prop to control width
+}> = ({ isOpen, onClose, title, children, maxWidth = "max-w-lg" }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -40,9 +42,10 @@ const Modal: React.FC<{
         className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      {/* Dynamic maxWidth applied here */}
+      <div className={`relative w-full ${maxWidth} bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]`}>
         {title && (
-          <div className="flex items-center justify-between p-5 border-b border-slate-700 bg-slate-800/50">
+          <div className="flex items-center justify-between p-5 border-b border-slate-700 bg-slate-800/50 shrink-0">
             <h3 className="text-lg font-semibold text-white">{title}</h3>
             <button
               onClick={onClose}
@@ -52,7 +55,7 @@ const Modal: React.FC<{
             </button>
           </div>
         )}
-        <div className="p-6 max-h-[80vh] overflow-y-auto custom-scrollbar">{children}</div>
+        <div className="p-6 overflow-y-auto custom-scrollbar flex-grow">{children}</div>
       </div>
     </div>
   );
@@ -74,15 +77,15 @@ const LabResultItem: React.FC<{ lab: any }> = ({ lab }) => {
   };
 
   return (
-    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/60 hover:border-slate-600 transition-all mb-3">
+    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/60 hover:border-slate-600 transition-all mb-3 group">
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-purple-500/10 rounded-lg border border-purple-500/10">
+          <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
             <TestTube className="w-5 h-5 text-purple-400" />
           </div>
           <div>
-            <p className="text-slate-100 font-medium text-sm">{lab.test}</p>
+            <p className="text-slate-100 font-semibold text-sm">{lab.test}</p>
             <p className="text-[11px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">
               {lab.date}
             </p>
@@ -91,7 +94,7 @@ const LabResultItem: React.FC<{ lab: any }> = ({ lab }) => {
         
         {/* Hide 'see-image' text, only show real text results */}
         {lab.result && !lab.result.startsWith("see") && (
-           <span className="font-mono text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-md">
+           <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-md">
              {lab.result}
            </span>
         )}
@@ -99,17 +102,17 @@ const LabResultItem: React.FC<{ lab: any }> = ({ lab }) => {
 
       {/* Image Carousel */}
       {hasImages && (
-        <div className="relative group rounded-lg overflow-hidden bg-slate-950 border border-slate-800">
-           <div className="aspect-[16/9] w-full relative flex items-center justify-center bg-black/40">
+        <div className="relative group/image rounded-lg overflow-hidden bg-slate-950 border border-slate-800 mt-3">
+           <div className="aspect-video w-full relative flex items-center justify-center bg-black/40">
              <img 
                src={images[currentImgIndex]} 
                alt="Lab Result" 
-               className="max-h-60 w-full object-contain cursor-pointer transition-opacity duration-300"
+               className="h-full w-full object-contain cursor-pointer transition-opacity duration-300"
                onClick={() => window.open(images[currentImgIndex], "_blank")}
              />
              
              {/* External Link Hint */}
-             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+             <div className="absolute top-2 right-2 opacity-0 group-hover/image:opacity-100 transition-opacity pointer-events-none">
                 <span className="bg-black/60 text-white p-1.5 rounded-lg backdrop-blur-sm">
                   <ExternalLink className="w-3 h-3" />
                 </span>
@@ -121,13 +124,13 @@ const LabResultItem: React.FC<{ lab: any }> = ({ lab }) => {
              <>
                <button 
                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                 className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110 backdrop-blur-sm border border-white/10"
+                 className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover/image:opacity-100 transition-all transform hover:scale-110 backdrop-blur-sm border border-white/10"
                >
                  <ChevronLeft className="w-5 h-5" />
                </button>
                <button 
                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110 backdrop-blur-sm border border-white/10"
+                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover/image:opacity-100 transition-all transform hover:scale-110 backdrop-blur-sm border border-white/10"
                >
                  <ChevronRight className="w-5 h-5" />
                </button>
@@ -241,63 +244,145 @@ const DoctorDashboard: React.FC = () => {
   };
 
 
-  // -------- Render Medical Records Section ----------
-  const renderMedicalData = (data: any) => {
-    const medical = data.medical || {};
-    const conditions = medical.conditions || [];
-    const labs = medical.labs || [];
+  // -------- Render Medical Records Section (NEW WIDE LAYOUT) ----------
+const renderMedicalData = (data: any) => {
+  const identity = data.identity || {};
+  const medical = data.medical || {};
+  const conditions = medical.conditions || [];
+  const labs = medical.labs || [];
 
-    return (
-      <div className="space-y-6">
-        {/* Patient Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-700">
-          <div className="flex flex-col">
-            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Patient Identity</span>
-            <p className="text-xl font-mono text-white tracking-tight">{viewPatientId}</p>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-full">
+
+      {/* --- LEFT COLUMN: PATIENT IDENTITY & VITALS (Span 4) --- */}
+      <div className="md:col-span-4 space-y-4">
+        
+        {/* Identity Card */}
+        <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-700/80 shadow-inner">
+          <div className="flex items-center justify-between mb-4">
+            <span className="flex items-center px-2.5 py-1 text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm">
+              <Lock className="w-3 h-3 mr-1.5 opacity-70" />
+              Decrypted
+            </span>
+            <div className="h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center">
+              <User className="w-4 h-4 text-slate-400" />
+            </div>
           </div>
-          <span className="flex items-center px-3 py-1.5 text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-full text-xs font-medium shadow-sm shadow-teal-900/20">
-            <Lock className="w-3 h-3 mr-1.5 opacity-70" />
-            Access Granted
-          </span>
+          
+          <div className="mb-4">
+            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Patient ID</span>
+            <p className="text-2xl font-mono text-white tracking-tight font-bold mt-0.5">{viewPatientId}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-y-3 gap-x-2 border-t border-slate-700/50 pt-4">
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-bold">Age</span>
+              <p className="text-sm text-slate-200 font-medium mt-0.5">
+                {identity.age || "-"}
+              </p>
+            </div>
+            <div>
+                  <span className="text-[10px] text-slate-500 uppercase font-bold">Sex</span>
+                <p className="text-sm text-slate-200 font-medium mt-0.5">
+                  {identity.sex || "-"}
+                </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Vitals */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/60 flex flex-col items-center justify-center text-center">
+             <Ruler className="w-5 h-5 text-blue-400 mb-1" />
+             <span className="text-xs text-slate-500 font-medium">Height</span>
+             <span className="text-lg font-bold text-white">{identity.height || "-"}<span className="text-xs text-slate-500 ml-0.5 font-normal">cm</span></span>
+          </div>
+          <div className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/60 flex flex-col items-center justify-center text-center">
+             <Weight className="w-5 h-5 text-emerald-400 mb-1" />
+             <span className="text-xs text-slate-500 font-medium">Weight</span>
+             <span className="text-lg font-bold text-white">{identity.weight || "-"}<span className="text-xs text-slate-500 ml-0.5 font-normal">kg</span></span>
+          </div>
         </div>
 
         {/* Conditions */}
-        {conditions.length > 0 && (
-          <div>
-            <h4 className="text-slate-400 mb-3 text-sm font-semibold uppercase tracking-wider flex items-center">
-              <ClipboardList className="w-4 h-4 mr-2 text-blue-400" />
-              Active Diagnoses
-            </h4>
+        <div className="bg-slate-800/40 p-5 rounded-2xl border border-slate-700/60">
+          <h4 className="text-slate-400 mb-4 text-xs font-bold uppercase tracking-wider flex items-center">
+            <ClipboardList className="w-4 h-4 mr-2 text-blue-400" />
+            Active Conditions
+          </h4>
+
+          {conditions.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {conditions.map((c: string, idx: number) => (
-                <span key={idx}
-                  className="px-3 py-1.5 text-blue-200 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm font-medium"
+                <span
+                  key={idx}
+                  className="px-3 py-1.5 text-blue-200 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs font-semibold"
                 >
                   {c}
+                </span>
+              ))}
+            </div>
+          ) : (
+             <div className="text-slate-500 text-xs italic py-2">No active conditions recorded.</div>
+          )}
+        </div>
+
+        {/* Allergies - Added Component */}
+        {medical.allergies && medical.allergies.length > 0 && (
+          <div className="bg-slate-800/40 p-5 rounded-2xl border border-slate-700/60">
+            <h4 className="text-slate-400 mb-4 text-xs font-bold uppercase tracking-wider flex items-center">
+              <AlertCircle className="w-4 h-4 mr-2 text-red-400" />
+              Allergies
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {medical.allergies.map((a: string, i: number) => (
+                <span
+                  key={i}
+                  className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-300 rounded-lg text-xs font-semibold"
+                >
+                  {a}
                 </span>
               ))}
             </div>
           </div>
         )}
 
-        {/* Labs */}
-        {labs.length > 0 && (
-          <div>
-            <h4 className="text-slate-400 mb-3 text-sm font-semibold uppercase tracking-wider flex items-center mt-6">
-              <Microscope className="w-4 h-4 mr-2 text-purple-400" />
-              Laboratory Results
-            </h4>
+      </div>
 
-            <div className="space-y-2">
+
+      {/* --- RIGHT COLUMN: LAB RESULTS (Span 8) --- */}
+      <div className="md:col-span-8 bg-slate-800/20 rounded-2xl border border-slate-700/40 flex flex-col overflow-hidden">
+        
+        <div className="p-4 border-b border-slate-700/50 bg-slate-800/40 flex justify-between items-center shrink-0">
+          <h4 className="text-slate-300 text-sm font-bold uppercase tracking-wider flex items-center">
+            <Microscope className="w-4 h-4 mr-2 text-purple-400" />
+            Laboratory Reports
+          </h4>
+          <span className="text-xs font-medium text-slate-500 px-2 py-1 bg-slate-800 rounded-md border border-slate-700">
+            Total: {labs.length}
+          </span>
+        </div>
+
+        <div className="p-4 overflow-y-auto custom-scrollbar h-full min-h-[300px]">
+          {labs.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {labs.map((lab: any, i: number) => (
                 <LabResultItem key={i} lab={lab} />
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-slate-500 opacity-60">
+              <TestTube className="w-12 h-12 mb-3" />
+              <p>No lab results found for this encounter.</p>
+            </div>
+          )}
+        </div>
+
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
 
   // ---------------- Pagination Logic ----------------
@@ -500,6 +585,7 @@ const DoctorDashboard: React.FC = () => {
           isOpen={activeModal === 'request'}
           onClose={resetRequest}
           title={reqStatus === "sent" ? undefined : "New Data Request"}
+          maxWidth="max-w-lg"
         >
           {reqStatus === "sent" ? (
             <div className="text-center py-6 animate-in fade-in zoom-in duration-300">
@@ -574,6 +660,7 @@ const DoctorDashboard: React.FC = () => {
           isOpen={activeModal === 'view'}
           onClose={closeViewModal}
           title={viewData ? "Authorized Clinical Data" : "Access Clinical Records"}
+          maxWidth={viewData ? "max-w-5xl" : "max-w-lg"} // WIDER MODAL WHEN DATA IS PRESENT
         >
           {!viewData ? (
             <form onSubmit={handleViewAuthorized} className="space-y-6">
@@ -623,14 +710,7 @@ const DoctorDashboard: React.FC = () => {
             <div className="space-y-4">
               {renderMedicalData(viewData)}
 
-              <div className="pt-4 border-t border-slate-700 mt-6">
-                <button
-                  onClick={closeViewModal}
-                  className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-colors font-medium border border-slate-600"
-                >
-                  Close
-                </button>
-              </div>
+         
             </div>
           )}
         </Modal>

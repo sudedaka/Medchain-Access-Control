@@ -1,24 +1,147 @@
 {
-    "patient1": {
-        "conditions": [
-            "Tomography Scan"
-        ],
-        "labs": [
-            {
-                "test": "tomogrophy scan",
-                "date": "2025-11-29T19:46+00:00",
-                "result": "see-images",
-                "images": [
-                    "http://localhost:8000/uploads/patient1_tomogrophy_scan_tomogrophy2.jpg",
-                    "http://localhost:8000/uploads/patient1_tomogrophy_scan_tomogrophy.png"
-                ]
-            }
+  "PID01": {
+    "conditions": [
+      "Type 2 diabetes mellitus",
+      "Asthma",
+      "Acute bronchitis"
+    ],
+    "medications": [
+      "Metformin 500mg BID"
+    ],
+    "allergies": [
+      "Penicillin",
+      "Dust mites"
+    ],
+    "labs": [
+      {
+        "test": "General checkup - Abdominal CT",
+        "date": "2025-12-01T09:15:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/2.-CT-Abdomen.jpg"
         ]
-    },
-    "patient2": {
-        "conditions": [
-            "Asthma"
-        ],
-        "labs": []
-    }
+      },
+      {
+        "test": "General checkup - Chest X-ray",
+        "date": "2025-12-01T09:30:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/chest-xray.jpeg"
+        ]
+      },
+      {
+        "test": "General checkup - Blood Test Summary",
+        "date": "2025-12-01T10:00:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/blood1.png",
+          "http://localhost:8000/uploads/blood2.png"
+        ]
+      },
+      {
+        "test": "General checkup - Chest CT",
+        "date": "2025-12-01T10:20:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/chest-ct.jpg"
+        ]
+      },
+      {
+        "test": "General checkup - Full-body CT",
+        "date": "2025-12-01T10:40:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/full-body-ct.png"
+        ]
+      }
+    ]
+  },
+
+  "PID02": {
+    "conditions": [
+      "Essential hypertension"
+    ],
+    "medications": [
+      "Lisinopril 20mg QD"
+    ],
+    "allergies": [
+      "Latex"
+    ],
+    "labs": [
+      {
+        "test": "CT Scan - Tomography evaluation",
+        "date": "2025-10-10T14:00:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/tomography1.jpg",
+          "http://localhost:8000/uploads/tomography2.png"
+        ]
+      }
+    ]
+  },
+
+  "PID03": {
+    "conditions": [
+      "Family history of diabetes",
+      "Genetic risk evaluation"
+    ],
+    "medications": [],
+    "allergies": [
+      "No known drug allergies"
+    ],
+    "labs": [
+      {
+        "test": "Genetic Panel Screening",
+        "date": "2025-09-05T11:30:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/genetest1.jpg",
+          "http://localhost:8000/uploads/genetest2.jpg",
+          "http://localhost:8000/uploads/genetest3.jpg"
+        ]
+      }
+    ]
+  },
+
+  "PID04": {
+    "conditions": [
+      "Left tibia/fibula fracture"
+    ],
+    "medications": [
+      "Ibuprofen 400mg TID"
+    ],
+    "allergies": [
+      "Morphine"
+    ],
+    "labs": [
+      {
+        "test": "X-ray – Tibia/Fibula fracture evaluation",
+        "date": "2025-07-22T08:20:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/xray-fracture.jpg"
+        ]
+      }
+    ]
+  },
+
+  "PID05": {
+    "conditions": [
+      "Mild trauma evaluation"
+    ],
+    "medications": [],
+    "allergies": [
+      "Ibuprofen"
+    ],
+    "labs": [
+      {
+        "test": "General X-ray overview",
+        "date": "2025-06-10T16:45:00+00:00",
+        "result": "see-images",
+        "images": [
+          "http://localhost:8000/uploads/xray3.png"
+        ]
+      }
+    ]
+  }
 }

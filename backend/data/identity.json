@@ -1,12 +1,37 @@
 {
-  "patient1": {
+  "PID01": {
     "name": "John Doe",
-    "age": 34,
-    "gender": "Male"
+    "age": 57,
+    "sex": "Female",
+    "height": 164,
+    "weight": 53
   },
-  "patient2": {
+  "PID02": {
     "name": "Emily Carter",
+    "age": 62,
+    "sex": "Female",
+    "height": 170,
+    "weight": 65
+  },
+  "PID03": {
+    "name": "Michael Ray",
+    "age": 44,
+    "sex": "Male",
+    "height": 181,
+    "weight": 82
+  },
+  "PID04": {
+    "name": "Sarah Lin",
     "age": 29,
-    "gender": "Female"
+    "sex": "Female",
+    "height": 167,
+    "weight": 60
+  },
+  "PID05": {
+    "name": "David Moore",
+    "age": 36,
+    "sex": "Male",
+    "height": 178,
+    "weight": 77
   }
 }
