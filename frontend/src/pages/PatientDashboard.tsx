@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight} from 'lucide-react';
+  ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight, ChevronDown, ChevronUp, History} from 'lucide-react';
 import React, { useEffect, useState } from "react";
-import {  getPendingRequests,  approveRequest,  rejectRequest,  getAudit, getAuthorizedData} from "../../services/api";
+import {  getPendingRequests,  approveRequest,  rejectRequest,  getAudit} from "../../services/api";
 
 // --- Event Translator ---
 function translateEvent(event: string) {
@@ -51,32 +51,33 @@ const Modal: React.FC<{
     </div>
   );
 };
-  // --- Timestamp Formatter ---
-  function formatTimestamp(timestamp: string): string {
-    const date = new Date(timestamp);
 
-    const day = date.getDate().toString().padStart(2, "0");
+// --- Timestamp Formatter ---
+function formatTimestamp(timestamp: string): string {
+  const date = new Date(timestamp);
 
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const month = monthNames[date.getMonth()];
+  const day = date.getDate().toString().padStart(2, "0");
 
-    const year = date.getFullYear();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = monthNames[date.getMonth()];
 
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
+  const year = date.getFullYear();
 
-    return `${day} ${month} ${year} – ${hours}:${minutes}`;
-  }
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  return `${day} ${month} ${year} – ${hours}:${minutes}`;
+}
 
 const PatientDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const patientId = localStorage.getItem("userId") ?? "";
+  const patientId = localStorage.getItem("userId") || "P-883920"; // Default ID for demo
 
   // State
   const [pending, setPending] = useState<any[]>([]);
   const [audit, setAudit] = useState<any[]>([]);
-  const [healthData, setHealthData] = useState<any>(null);
+  const [showHistory, setShowHistory] = useState(false);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,7 +90,7 @@ const PatientDashboard: React.FC = () => {
   const [selectedReq, setSelectedReq] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Load pending + audit logs + health data
+  // Load pending + audit logs
   useEffect(() => {
     async function load() {
       const pendingData = await getPendingRequests(patientId);
@@ -97,15 +98,6 @@ const PatientDashboard: React.FC = () => {
 
       setPending(pendingData.pending);
       setAudit((auditData?.audit || []).reverse());
-
-
-      // Fetch own health data
-      try {
-        const data = await getAuthorizedData(patientId, patientId);
-        setHealthData(data);
-      } catch (err) {
-        console.log("Health data not available or restricted");
-      }
     }
     load();
   }, [patientId]);
@@ -172,19 +164,16 @@ const PatientDashboard: React.FC = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  const identity = healthData?.identity || {};
-  const medical = healthData?.medical || {};
-
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 relative overflow-hidden font-sans">
 
       <div className="absolute top-0 left-0 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10 flex flex-col min-h-[calc(100vh-3rem)]">
         
         <button 
           onClick={() => navigate('/')} 
-          className="flex items-center text-slate-400 mb-8 hover:text-white transition-colors group"
+          className="flex items-center text-slate-400 mb-8 hover:text-white transition-colors group w-fit"
         >
           <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Home
@@ -202,165 +191,120 @@ const PatientDashboard: React.FC = () => {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left Column */}
-          <div className="lg:col-span-1 space-y-8">
+        {/* Pending Requests Section - CENTERED */}
+        <div className="w-full max-w-3xl mx-auto mb-10">
+          <h3 className="text-xl font-semibold text-white mb-6 flex items-center justify-center">
+            <Bell className="w-6 h-6 mr-3 text-yellow-500" />
+            Pending Actions
+          </h3>
 
-            {/* My Health Summary */}
-            {healthData && (
-              <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700">
-                <h3 className="text-lg font-semibold text-white flex items-center mb-5">
-                  <User className="w-5 h-5 mr-2 text-teal-400" />
-                  My Health Summary
-                </h3>
+          <div className="space-y-6">
 
-                <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-                  <div className="bg-slate-900/40 p-3 rounded-xl">
-                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Age</p>
-                    <p className="text-white font-medium">{identity.age || '-'}</p>
-                  </div>
-                  <div className="bg-slate-900/40 p-3 rounded-xl">
-                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Sex</p>
-                    <p className="text-white font-medium">{identity.sex || '-'}</p>
-                  </div>
-
-                  <div className="bg-slate-900/40 p-3 rounded-xl">
-                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Height</p>
-                    <p className="text-white font-medium">{identity.height ? `${identity.height} cm` : '-'}</p>
-                  </div>
-
-                  <div className="bg-slate-900/40 p-3 rounded-xl">
-                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Weight</p>
-                    <p className="text-white font-medium">{identity.weight ? `${identity.weight} kg` : '-'}</p>
-                  </div>
+            {pending.length === 0 && (
+              <div className="p-8 bg-slate-800/30 rounded-2xl border border-slate-700 text-center flex flex-col items-center">
+                <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center mb-3">
+                  <Check className="w-6 h-6 text-slate-500" />
                 </div>
-
-                {/* Allergies */}
-                {medical.allergies && medical.allergies.length > 0 && (
-                  <div className="mb-6">
-                    <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2 flex items-center">
-                      <AlertTriangle className="w-3 h-3 mr-1.5 text-red-400" /> Allergies
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {medical.allergies.map((a: string, i: number) => (
-                        <span key={i} className="px-2.5 py-1 bg-red-500/10 border border-red-500/20 rounded-md text-red-300 text-xs font-medium">
-                          {a}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Conditions */}
-                {medical.conditions && medical.conditions.length > 0 && (
-                  <div className="mb-6">
-                    <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2">Conditions</p>
-                    <div className="flex flex-wrap gap-2">
-                      {medical.conditions.map((c: string, i: number) => (
-                        <span key={i} className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 rounded-md text-blue-300 text-xs font-medium">
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Medications */}
-                {medical.medications && medical.medications.length > 0 && (
-                  <div>
-                    <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2">Medications</p>
-                    <ul className="space-y-1.5">
-                      {medical.medications.map((m: string, i: number) => (
-                        <li key={i} className="text-slate-300 text-xs pl-2 border-l-2 border-slate-600">
-                          {m}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                <p className="text-slate-400 text-sm font-medium">No pending requests at this time.</p>
+                <p className="text-slate-500 text-xs mt-1">New access requests will appear here.</p>
               </div>
             )}
 
-            {/* Pending Requests Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <Bell className="w-5 h-5 mr-2 text-yellow-500" />
-                Pending Actions
-              </h3>
+            {pending.map(req => (
+              <div
+                key={req.id}
+                className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-3xl border border-yellow-500/30 shadow-2xl hover:bg-slate-800/70 transition-all relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 px-4 py-1.5 bg-yellow-500/20 text-yellow-400 text-xs font-bold uppercase tracking-wider rounded-bl-2xl border-b border-l border-yellow-500/20 shadow-sm">
+                  Action Required
+                </div>
 
-              <div className="space-y-4">
-
-                {pending.length === 0 && (
-                  <div className="p-6 bg-slate-800/30 rounded-2xl border border-slate-700 text-center">
-                    <p className="text-slate-400 text-sm">No pending requests.</p>
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-6">
+                  <div className="flex-1">
+                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-2">
+                      Requesting Physician
+                    </p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center mr-3 border border-indigo-500/30">
+                        <User className="w-5 h-5 text-indigo-300" />
+                      </div>
+                      <p className="text-white font-semibold text-xl">{req.doctorId}</p>
+                    </div>
                   </div>
-                )}
+                  
+                  <div className="flex-1">
+                     <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-2">Request Time</p>
+                     <p className="text-slate-300 font-mono text-sm">{formatTimestamp(req.createdAt || req.timestamp || "")}</p>
+                  </div>
+                </div>
 
-                {pending.map(req => (
-                  <div
-                    key={req.id}
-                    className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-3xl border border-yellow-500/30 shadow-lg hover:bg-slate-800/70 transition-all relative overflow-hidden"
+                <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-700/50 mb-8">
+                  <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-2">Purpose of Access</p>
+                  <span className="text-sm text-slate-200 leading-relaxed block">
+                    {req.purpose}
+                  </span>
+                </div>
+
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => handleOpenApproveModal(req)}
+                    className="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold text-sm flex items-center justify-center shadow-lg hover:shadow-teal-500/20 transition-all transform hover:-translate-y-0.5"
                   >
-                    <div className="absolute top-0 right-0 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-[10px] font-bold uppercase tracking-wider rounded-bl-xl border-b border-l border-yellow-500/20">
-                      Action Required
-                    </div>
+                    <Check className="w-4 h-4 mr-2" /> Approve Access
+                  </button>
 
-                    <div className="mt-2 mb-4">
-                      <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">
-                        Requesting Physician
-                      </p>
-                      <p className="text-white font-medium text-lg">{req.doctorId}</p>
-                    </div>
-
-                    <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 mb-5">
-                      <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">Purpose</p>
-                      <span className="text-xs text-slate-200 leading-relaxed block">
-                        {req.purpose}
-                      </span>
-                    </div>
-
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => handleOpenApproveModal(req)}
-                        className="flex-1 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg font-medium text-xs flex items-center justify-center shadow-lg transition-colors"
-                      >
-                        <Check className="w-3.5 h-3.5 mr-1.5" /> Approve
-                      </button>
-
-                      <button
-                        onClick={() => {  setSelectedRejectId(req.id);  setActiveModal('deny');}}
-                        className="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg font-medium text-xs flex items-center justify-center border border-slate-600 transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5 mr-1.5" /> Deny
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
+                  <button
+                    onClick={() => {  setSelectedRejectId(req.id);  setActiveModal('deny');}}
+                    className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-sm flex items-center justify-center border border-red-700/40 transition-all hover:border-red-600"
+                  >
+                    <X className="w-4 h-4 mr-2" /> Deny Request
+                  </button>
+                </div>
               </div>
-            </div>
+            ))}
 
           </div>
+        </div>
 
-          {/* Right Column – Audit Log */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
+        {/* Toggle History Button */}
+        <div className="flex justify-center mb-8">
+            <button 
+                onClick={() => setShowHistory(!showHistory)}
+                className="group flex items-center px-8 py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-full font-medium transition-all border border-slate-700 hover:border-teal-500/50 shadow-lg hover:shadow-teal-500/10"
+            >
+                {showHistory ? (
+                    <>
+                        <ChevronUp className="w-5 h-5 mr-3 text-teal-400" />
+                        Hide Access History
+                    </>
+                ) : (
+                    <>
+                        <History className="w-5 h-5 mr-3 text-teal-400" />
+                        Show Medical Access History
+                    </>
+                )}
+            </button>
+        </div>
+
+        {/* Audit Log - BOTTOM / FULL WIDTH - CONDITIONALLY RENDERED */}
+        {showHistory && (
+          <div className="w-full max-w-5xl mx-auto mt-4 mb-16 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="flex items-center justify-between mb-4 px-2">
               <h3 className="text-lg font-semibold text-white flex items-center">
                 <Shield className="w-5 h-5 mr-2 text-teal-400" />
-                Medical Access History
+                Access Logs
               </h3>
             </div>
 
-            <div className="bg-slate-800/30 backdrop-blur-sm rounded-3xl border border-slate-700 overflow-hidden flex flex-col min-h-[400px]">
-              <div className="overflow-x-auto flex-grow">
+            <div className="bg-slate-800/30 backdrop-blur-sm rounded-3xl border border-slate-700 overflow-hidden flex flex-col">
+              <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-slate-800/80 text-slate-400 text-xs uppercase tracking-wider">
-                      <th className="p-4 font-semibold">Date & Time</th>
+                      <th className="p-4 pl-6 font-semibold">Date & Time</th>
                       <th className="p-4 font-semibold">Doctor</th>
                       <th className="p-4 font-semibold">Event</th>
-                      <th className="p-4 font-semibold text-right">Status</th>
+                      <th className="p-4 pr-6 font-semibold text-right">Status</th>
                     </tr>
                   </thead>
 
@@ -368,40 +312,40 @@ const PatientDashboard: React.FC = () => {
                     
                     {audit.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="p-4 text-center text-slate-500 text-sm">
-                          No activity yet.
+                        <td colSpan={4} className="p-8 text-center text-slate-500 text-sm">
+                          No activity recorded yet.
                         </td>
                       </tr>
                     )}
 
                     {currentAuditItems.map((item: any, index: number) => (
-                      <tr key={index} className="hover:bg-slate-800/40 transition-colors">
-                        <td className="p-4 text-slate-400 text-sm font-mono whitespace-nowrap">
+                      <tr key={index} className="hover:bg-slate-800/40 transition-colors group">
+                        <td className="p-4 pl-6 text-slate-400 text-sm font-mono whitespace-nowrap group-hover:text-slate-300">
                         {formatTimestamp(item.timestamp)}
                       </td>
 
-                        <td className="p-4 text-white text-sm">{item.doctorId}</td>
+                        <td className="p-4 text-white text-sm font-medium">{item.doctorId}</td>
 
                         <td className="p-4 text-slate-300 text-sm whitespace-nowrap">
                           {translateEvent(item.event)}
                         </td>
 
-                        <td className="p-4 text-right whitespace-nowrap">
+                        <td className="p-4 pr-6 text-right whitespace-nowrap">
                           {item.event === "REQUEST_APPROVED" && (
-                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                              <CheckCircle className="w-3 h-3 mr-1.5" />
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20 shadow-[0_0_10px_rgba(74,222,128,0.1)]">
+                              <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                               Approved
                             </span>
                           )}
 
                           {item.event === "REQUEST_REJECTED" && (
-                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_10px_rgba(248,113,113,0.1)]">
                               Denied
                             </span>
                           )}
 
                           {item.event === "REQUEST_CREATED" && (
-                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
                               Pending
                             </span>
                           )}
@@ -419,7 +363,7 @@ const PatientDashboard: React.FC = () => {
                   <button 
                     onClick={handlePrevPage} 
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300"
+                    className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300 transition-colors"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -431,7 +375,7 @@ const PatientDashboard: React.FC = () => {
                   <button 
                     onClick={handleNextPage} 
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300"
+                    className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300 transition-colors"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -439,8 +383,8 @@ const PatientDashboard: React.FC = () => {
               )}
             </div>
           </div>
+        )}
 
-        </div>
       </div>
 
       {/* APPROVE MODAL */}
@@ -462,14 +406,14 @@ const PatientDashboard: React.FC = () => {
           <div className="flex justify-end space-x-3 pt-2">
             <button
               onClick={() => setActiveModal('none')}
-              className="px-5 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg text-sm font-medium"
+              className="px-5 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirmApprove}
               disabled={isProcessing}
-              className="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg shadow-lg flex items-center min-w-[140px] justify-center"
+              className="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg shadow-lg flex items-center min-w-[140px] justify-center transition-colors"
             >
               {isProcessing ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -503,14 +447,14 @@ const PatientDashboard: React.FC = () => {
           <div className="flex justify-end space-x-3 pt-2">
             <button
               onClick={() => setActiveModal('none')}
-              className="px-5 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg text-sm font-medium"
+              className="px-5 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors"
             >
               Cancel
             </button>
 
             <button
               onClick={handleConfirmDeny}
-              className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg shadow-lg text-sm font-medium"
+              className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg shadow-lg text-sm font-medium transition-colors"
             >
               Deny Access
             </button>
@@ -532,7 +476,7 @@ const PatientDashboard: React.FC = () => {
      
           <button 
             onClick={handleCloseSuccess}
-            className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium"
+            className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-colors"
           >
             OK
           </button>

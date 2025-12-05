@@ -26,5 +26,12 @@
         "doctorId": "doctor1",
         "patientId": "PID02",
         "timestamp": "2025-12-03T22:42+00:00"
+    },
+    {
+        "event": "REQUEST_CREATED",
+        "requestId": "dfbe9842-b304-4085-bf2d-16e576d64d8c",
+        "doctorId": "doctor1",
+        "patientId": "PID02",
+        "timestamp": "2025-12-05T14:03+00:00"
     }
 ]

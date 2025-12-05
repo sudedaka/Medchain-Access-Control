@@ -20,9 +20,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      # Do not inject a hard-coded backend host here; frontend now
-      # resolves the API at runtime using the page hostname. If you
-      # need to override at build-time, pass VITE_API_URL explicitly.
     container_name: medchain_frontend
     ports:
       - "5173:5173"
