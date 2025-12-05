@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import json, os
 import uuid     #creates unique IDs for requests
 from datetime import datetime, timezone
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
 
 # ---- PATHS ----
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -50,6 +52,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # ============================================================
 @app.post("/api/lab/upload")
 async def upload_lab_result(
+    request: Request,
     patientId: str = Form(...),
     testType: str = Form(...),
     files: list[UploadFile] = File(...)
@@ -64,7 +67,8 @@ async def upload_lab_result(
         with open(path, "wb") as f:
             f.write(await file.read())
 
-        urls.append(f"http://localhost:8000/uploads/{safe_name}")
+        host_base = str(request.base_url).rstrip("/")
+        urls.append(f"{host_base}/uploads/{safe_name}")
 
     med = json_load(FILES["medical"])
     if patientId not in med:
@@ -234,6 +238,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # ============================================================
 @app.post("/api/lab/upload")
 async def upload_lab_result(
+    request: Request,
     patientId: str = Form(...),
     testType: str = Form(...),
     files: list[UploadFile] = File(...)
@@ -248,7 +253,8 @@ async def upload_lab_result(
         with open(path, "wb") as f:
             f.write(await file.read())
 
-        urls.append(f"http://localhost:8000/uploads/{safe_name}")
+        host_base = str(request.base_url).rstrip("/")
+        urls.append(f"{host_base}/uploads/{safe_name}")
 
     med = json_load(FILES["medical"])
     if patientId not in med:
