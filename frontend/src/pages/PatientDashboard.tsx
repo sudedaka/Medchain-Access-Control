@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight, ChevronDown, ChevronUp, History} from 'lucide-react';
+  ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight, ChevronUp, History} from 'lucide-react';
 import React, { useEffect, useState } from "react";
 import {  getPendingRequests,  approveRequest,  rejectRequest,  getAudit} from "../../services/api";
 
@@ -236,13 +236,6 @@ const PatientDashboard: React.FC = () => {
                      <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-2">Request Time</p>
                      <p className="text-slate-300 font-mono text-sm">{formatTimestamp(req.createdAt || req.timestamp || "")}</p>
                   </div>
-                </div>
-
-                <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-700/50 mb-8">
-                  <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-2">Purpose of Access</p>
-                  <span className="text-sm text-slate-200 leading-relaxed block">
-                    {req.purpose}
-                  </span>
                 </div>
 
                 <div className="flex space-x-4">

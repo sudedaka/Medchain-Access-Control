@@ -18,7 +18,7 @@
         "date": "2025-12-01T09:15:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/2.-CT-Abdomen.jpg"
+          "/uploads/2.-CT-Abdomen.jpg"
         ]
       },
       {
@@ -26,7 +26,7 @@
         "date": "2025-12-01T09:30:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/chest-xray.jpeg"
+          "/uploads/chest-xray.jpeg"
         ]
       },
       {
@@ -34,8 +34,8 @@
         "date": "2025-12-01T10:00:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/blood1.png",
-          "http://localhost:8000/uploads/blood2.png"
+          "/uploads/blood1.png",
+          "/uploads/blood2.png"
         ]
       },
       {
@@ -43,7 +43,7 @@
         "date": "2025-12-01T10:20:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/chest-ct.jpg"
+          "/uploads/chest-ct.jpg"
         ]
       },
       {
@@ -51,34 +51,34 @@
         "date": "2025-12-01T10:40:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/full-body-ct.png"
+          "/uploads/full-body-ct.png"
         ]
       }
     ]
   },
 
-  "PID02": {
-    "conditions": [
-      "Essential hypertension"
-    ],
-    "medications": [
-      "Lisinopril 20mg QD"
-    ],
-    "allergies": [
-      "Latex"
-    ],
-    "labs": [
-      {
-        "test": "CT Scan - Tomography evaluation",
-        "date": "2025-10-10T14:00:00+00:00",
-        "result": "see-images",
-        "images": [
-          "http://localhost:8000/uploads/tomography.jpg",
-          "http://localhost:8000/uploads/tomography2.png"
-        ]
-      }
-    ]
-  },
+"PID02": {
+  "conditions": [
+    "Essential hypertension"
+  ],
+  "medications": [
+    "Lisinopril 20mg QD"
+  ],
+  "allergies": [
+    "Latex"
+  ],
+  "labs": [
+    {
+      "test": "CT Scan - Tomography evaluation",
+      "date": "2025-10-10T14:00:00+00:00",
+      "result": "see-images",
+      "images": [
+        "/uploads/tomogrophy.jpg",
+        "/uploads/tomogrophy2.png"
+      ]
+    }
+  ]
+},
 
   "PID03": {
     "conditions": [
@@ -95,9 +95,9 @@
         "date": "2025-09-05T11:30:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/genetest1.jpg",
-          "http://localhost:8000/uploads/genetest2.jpg",
-          "http://localhost:8000/uploads/genetest3.jpg"
+          "/uploads/genetest1.jpg",
+          "/uploads/genetest2.jpg",
+          "/uploads/genetest3.jpg"
         ]
       }
     ]
@@ -119,7 +119,7 @@
         "date": "2025-07-22T08:20:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/xray-fracture.jpg"
+          "/uploads/xray-fracture.jpg"
         ]
       }
     ]
@@ -139,7 +139,7 @@
         "date": "2025-06-10T16:45:00+00:00",
         "result": "see-images",
         "images": [
-          "http://localhost:8000/uploads/xray3.png"
+          "/uploads/xray3.png"
         ]
       }
     ]

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, User, Microscope } from 'lucide-react';
+import { Stethoscope, User } from 'lucide-react';
 import RoleCard from './components/RoleCard';
 
 const Home: React.FC = () => {
@@ -19,7 +19,7 @@ const Home: React.FC = () => {
     // redirect
     if (selectedRole === "Doctor") navigate("/doctor");
     if (selectedRole === "Patient") navigate("/patient");
-    if (selectedRole === "Lab") navigate("/lab");
+
   };
 
   return (
@@ -60,13 +60,6 @@ const Home: React.FC = () => {
             gradient="from-emerald-500 to-teal-500"
             description="Full sovereignty over your data. Grant or revoke access consents via the blockchain ledger."
             onClick={() => setSelectedRole("Patient")}
-          />
-          <RoleCard
-            title="Lab"
-            icon={Microscope}
-            gradient="from-purple-500 to-pink-500"
-            description="Submit immutable test results and genomic sequencing data directly to the secure network."
-            onClick={() => setSelectedRole("Lab")}
           />
         </main>
       )}

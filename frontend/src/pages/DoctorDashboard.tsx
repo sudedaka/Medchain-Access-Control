@@ -158,7 +158,7 @@ const DoctorDashboard: React.FC = () => {
 
   // Request form
   const [reqPatientId, setReqPatientId] = useState("");
-  const [reqPurpose, setReqPurpose] = useState("");
+
   const [reqStatus, setReqStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
 
   // View Authorized Data
@@ -186,30 +186,29 @@ const DoctorDashboard: React.FC = () => {
   // -------- Handle Request Creation ----------
   const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reqPatientId || !reqPurpose) return;
+    if (!reqPatientId) return;
 
-    setReqStatus("sending");
-    try {
-      await createRequest(doctorId, reqPatientId, reqPurpose);
-      await new Promise(res => setTimeout(res, 600));
-      setReqStatus("sent");
+setReqStatus("sending");
+try {
+  await createRequest(doctorId, reqPatientId);
+  await new Promise(res => setTimeout(res, 600));
+  setReqStatus("sent");
 
-      // Refresh table
-      const result = await getDoctorRequests(doctorId);
-      setDoctorRequests(result.requests.reverse());
-      setCurrentPage(1); // Reset to first page on new entry
+  // Refresh table
+  const result = await getDoctorRequests(doctorId);
+  setDoctorRequests(result.requests.reverse());
+  setCurrentPage(1); // Reset to first page on new entry
 
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send request.");
-      setReqStatus("idle");
-    }
-  };
-
+} catch (err) {
+  console.error(err);
+  alert("Failed to send request.");
+  setReqStatus("idle");
+}
+}; 
 
   const resetRequest = () => {
     setReqPatientId("");
-    setReqPurpose("");
+   
     setReqStatus("idle");
     setActiveModal("none");
   };
@@ -498,7 +497,7 @@ const renderMedicalData = (data: any) => {
           <div className="overflow-x-auto flex-grow">
             <div className="p-4 border-b border-slate-800 bg-slate-900/40 flex font-semibold text-xs text-slate-500 uppercase tracking-wider">
               <span className="w-1/3">Patient</span>
-              <span className="w-1/3">Purpose</span>
+           
               <span className="w-1/3 text-right">Status</span>
             </div>
 
@@ -521,9 +520,6 @@ const renderMedicalData = (data: any) => {
                   </span>
                   <p className="text-xs text-slate-500 mt-1">{formatTimestamp(req.createdAt)}</p>
                 </div>
-
-                {/* Purpose */}
-                <div className="w-1/3 text-slate-300 text-sm">{req.purpose}</div>
 
                 {/* Status */}
                 <div className="w-1/3 flex justify-end">
@@ -619,17 +615,6 @@ const renderMedicalData = (data: any) => {
                 </div>
               </div>
 
-              {/* Purpose */}
-              <div>
-                <label className="text-sm font-medium text-slate-400 mb-1.5 block">Purpose</label>
-                <textarea
-                  value={reqPurpose}
-                  onChange={(e) => setReqPurpose(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-4 text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all outline-none h-32 resize-none"
-                  placeholder="Reason for access request..."
-                  required
-                />
-              </div>
 
               {/* Buttons */}
               <div className="flex justify-end pt-2">

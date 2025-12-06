@@ -1,26 +1,17 @@
-[
-    {
-        "id": "0403b20f-30dc-440a-b569-f0bafdcb4fb8",
+{
+    "2": {
         "doctorId": "doctor1",
         "patientId": "PID01",
-        "purpose": "General checkup",
-        "status": "approved",
-        "createdAt": "2025-12-03T22:40+00:00"
+        "createdAt": "2025-12-10T21:31:44.404317+00:00"
     },
-    {
-        "id": "bece69ea-4714-4024-bfd7-bde4ff83a0f8",
+    "3": {
         "doctorId": "doctor1",
         "patientId": "PID02",
-        "purpose": "Essential hypertension",
-        "status": "approved",
-        "createdAt": "2025-12-03T22:42+00:00"
+        "createdAt": "2025-12-10T21:02:48.124560+00:00"
     },
-    {
-        "id": "dfbe9842-b304-4085-bf2d-16e576d64d8c",
+    "4": {
         "doctorId": "doctor1",
-        "patientId": "PID02",
-        "purpose": "Essential hypertension",
-        "status": "pending",
-        "createdAt": "2025-12-05T14:03+00:00"
+        "patientId": "PID01",
+        "createdAt": "2025-12-10T21:11:40.252974+00:00"
     }
-]
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "index": 1,
+        "timestamp": "genesis",
+        "proof": 1,
+        "previous_hash": "0",
+        "hash": "genesis_hash",
+        "data": {
+            "type": "GENESIS"
+        }
+    }
+]
