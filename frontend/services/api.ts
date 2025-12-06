@@ -1,17 +1,42 @@
 // Prefer an explicit build-time URL, but fall back at runtime to the current host
-const RUNTIME_HOST = typeof window !== "undefined" ? window.location.hostname : "localhost";
-const API_BASE = (import.meta.env.VITE_API_URL as string) || `http://${RUNTIME_HOST}:8000`;
+const RUNTIME_HOST =
+  typeof window !== "undefined" ? window.location.hostname : "localhost";
+const API_BASE =
+  (import.meta.env.VITE_API_URL as string) || `http://${RUNTIME_HOST}:8000`;
 
+// ---- IMAGE URL NORMALIZER ----
+// Fixes 3 cases:
+// 1) "/uploads/x.png"           → http://host:8000/uploads/x.png
+// 2) "http://localhost:8000/.." → http://host:8000/..
+// 3) "http://backend:8000/.."   → http://host:8000/..
 function normalizeImageUrl(url: string) {
   if (!url) return url;
-  if (url.startsWith("http://localhost:8000") || url.startsWith("http://backend:8000")) {
-    const host = typeof window !== "undefined" ? window.location.hostname : "localhost";
-    return url.replace(/http:\/\/(localhost|backend):8000/, `http://${host}:8000`);
+
+  const host =
+    typeof window !== "undefined" ? window.location.hostname : "localhost";
+
+  // CASE 1: Relative path like "/uploads/img.jpg"
+  if (url.startsWith("/uploads")) {
+    return `http://${host}:8000${url}`;
   }
+
+  // CASE 2-3: Replace hardcoded localhost/backend with actual host
+  if (
+    url.startsWith("http://localhost:8000") ||
+    url.startsWith("http://backend:8000")
+  ) {
+    return url.replace(
+      /http:\/\/(localhost|backend):8000/,
+      `http://${host}:8000`
+    );
+  }
+
   return url;
 }
 
+// ----------------------------------------------------------------------
 // Doctor creates request
+// ----------------------------------------------------------------------
 export async function createRequest(
   doctorId: string,
   patientId: string,
@@ -26,15 +51,17 @@ export async function createRequest(
   return response.json();
 }
 
+// ----------------------------------------------------------------------
 // Patient pending requests
+// ----------------------------------------------------------------------
 export async function getPendingRequests(patientId: string) {
-  const response = await fetch(
-    `${API_BASE}/api/requests/pending/${patientId}`
-  );
+  const response = await fetch(`${API_BASE}/api/requests/pending/${patientId}`);
   return response.json();
 }
 
+// ----------------------------------------------------------------------
 // Patient approves request
+// ----------------------------------------------------------------------
 export async function approveRequest(requestId: string) {
   const response = await fetch(
     `${API_BASE}/api/requests/${requestId}/approve`,
@@ -44,7 +71,9 @@ export async function approveRequest(requestId: string) {
   return response.json();
 }
 
+// ----------------------------------------------------------------------
 // Patient rejects request
+// ----------------------------------------------------------------------
 export async function rejectRequest(requestId: string) {
   const response = await fetch(
     `${API_BASE}/api/requests/${requestId}/reject`,
@@ -54,46 +83,50 @@ export async function rejectRequest(requestId: string) {
   return response.json();
 }
 
-// Doctor fetches data
+// ----------------------------------------------------------------------
+// Doctor fetches data (medical + identity)
+// ----------------------------------------------------------------------
 export async function getAuthorizedData(patientId: string, doctorId: string) {
   const response = await fetch(
     `${API_BASE}/api/patient/${patientId}/data?doctorId=${doctorId}`
   );
 
   const data = await response.json();
-  // normalize any image URLs returned from backend data (handles legacy localhost/backend URLs)
+
+  // Normalize images
   try {
     if (data && data.medical && data.medical.labs) {
       data.medical.labs = data.medical.labs.map((lab: any) => {
         if (lab.images && Array.isArray(lab.images)) {
-          lab.images = lab.images.map((u: string) => normalizeImageUrl(u));
+          lab.images = lab.images.map((url: string) => normalizeImageUrl(url));
         }
         return lab;
       });
     }
-  } catch (e) {
-    // ignore normalization errors
-  }
+  } catch {}
 
   return data;
 }
 
-// Audit log
+// ----------------------------------------------------------------------
+// Patient audit log
+// ----------------------------------------------------------------------
 export async function getAudit(patientId: string) {
-  const response = await fetch(
-    `${API_BASE}/api/audit/${patientId}`
-  );
+  const response = await fetch(`${API_BASE}/api/audit/${patientId}`);
   return response.json();
 }
 
+// ----------------------------------------------------------------------
+// Doctor request history
+// ----------------------------------------------------------------------
 export async function getDoctorRequests(doctorId: string) {
-  const response = await fetch(
-    `${API_BASE}/api/requests/doctor/${doctorId}`
-  );
+  const response = await fetch(`${API_BASE}/api/requests/doctor/${doctorId}`);
   return response.json();
 }
 
-// Lab uploads result
+// ----------------------------------------------------------------------
+// Lab upload result
+// ----------------------------------------------------------------------
 export async function uploadLabResult(
   patientId: string,
   testType: string,
@@ -103,7 +136,7 @@ export async function uploadLabResult(
   formData.append("patientId", patientId);
   formData.append("testType", testType);
 
-  files.forEach((file) => formData.append("files", file)); // multiple files
+  files.forEach((file) => formData.append("files", file));
 
   const response = await fetch(`${API_BASE}/api/lab/upload`, {
     method: "POST",
@@ -111,8 +144,9 @@ export async function uploadLabResult(
   });
 
   const res = await response.json();
+
   if (res && res.images && Array.isArray(res.images)) {
-    res.images = res.images.map((u: string) => normalizeImageUrl(u));
+    res.images = res.images.map((url: string) => normalizeImageUrl(url));
   }
 
   return res;

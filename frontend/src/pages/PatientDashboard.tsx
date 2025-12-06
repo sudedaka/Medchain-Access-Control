@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight, ChevronDown, ChevronUp, History} from 'lucide-react';
+  ArrowLeft,   User,   Bell,   Check,   X,   Shield,   CheckCircle,   AlertTriangle,  Loader2,  ChevronLeft,  ChevronRight, ChevronUp, History} from 'lucide-react';
 import React, { useEffect, useState } from "react";
 import {  getPendingRequests,  approveRequest,  rejectRequest,  getAudit} from "../../services/api";
 
