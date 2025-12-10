@@ -41,7 +41,6 @@ export async function createRequest(
   return response.json();
 }
 
-
 // ----------------------------------------------------------------------
 // Patient pending requests
 // ----------------------------------------------------------------------
@@ -49,7 +48,6 @@ export async function getPendingRequests(patientId: string) {
   const response = await fetch(`${API_BASE}/api/requests/pending/${patientId}`);
   return response.json();
 }
-
 
 // ----------------------------------------------------------------------
 // Patient approves request
@@ -61,7 +59,6 @@ export async function approveRequest(requestId: string) {
   );
   return response.json();
 }
-
 
 // ----------------------------------------------------------------------
 // Patient rejects request
@@ -100,7 +97,6 @@ export async function getAuthorizedData(patientId: string, doctorId: string) {
   return data;
 }
 
-
 // ----------------------------------------------------------------------
 // Patient audit log
 // ----------------------------------------------------------------------
@@ -108,7 +104,6 @@ export async function getAudit(patientId: string) {
   const response = await fetch(`${API_BASE}/api/audit/${patientId}`);
   return response.json();
 }
-
 
 // ----------------------------------------------------------------------
 // Doctor request history
