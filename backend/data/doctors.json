@@ -1,0 +1,10 @@
+{
+  "doctor1": {
+    "name": "Dr. Alice Smith",
+    "department": "Radiology"
+  },
+  "doctor2": {
+    "name": "Dr. Robert Chen",
+    "department": "Oncology"
+  }
+}

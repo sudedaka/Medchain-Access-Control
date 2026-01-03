@@ -78,7 +78,8 @@ const PatientDashboard: React.FC = () => {
   const [pending, setPending] = useState<any[]>([]);
   const [audit, setAudit] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  
+  const [patientName, setPatientName] = useState<string>("");
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -101,6 +102,22 @@ const PatientDashboard: React.FC = () => {
     }
     load();
   }, [patientId]);
+
+ useEffect(() => {
+  if (!patientId) return;
+
+  fetch(`http://localhost:8000/api/patient/${patientId}/data`)
+    .then(res => res.json())
+    .then(data => {
+      if (data?.identity?.name) {
+        setPatientName(data.identity.name);
+      }
+    })
+    .catch(() => {
+      setPatientName(patientId); // fallback
+    });
+}, [patientId]);
+
 
   const handleOpenApproveModal = (req: any) => {
     setSelectedReq(req);
@@ -186,7 +203,7 @@ const PatientDashboard: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Patient Portal</h1>
             <p className="text-slate-400">
-              Logged in as: <span className="text-blue-300 font-semibold">{patientId}</span>
+              Logged in as: <span className="text-blue-300 font-semibold">{patientName}</span>
             </p>
           </div>
         </header>

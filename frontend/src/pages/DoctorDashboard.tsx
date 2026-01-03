@@ -104,12 +104,16 @@ const LabResultItem: React.FC<{ lab: any }> = ({ lab }) => {
       {hasImages && (
         <div className="relative group/image rounded-lg overflow-hidden bg-slate-950 border border-slate-800 mt-3">
            <div className="aspect-video w-full relative flex items-center justify-center bg-black/40">
-             <img 
-               src={images[currentImgIndex]} 
-               alt="Lab Result" 
-               className="h-full w-full object-contain cursor-pointer transition-opacity duration-300"
-               onClick={() => window.open(images[currentImgIndex], "_blank")}
-             />
+         <a href={images[currentImgIndex]} target="_blank" rel="noopener noreferrer">
+          <img
+            src={images[currentImgIndex]}
+            alt="Lab Result"
+            className="h-full w-full object-contain cursor-zoom-in"
+          />
+        </a>
+
+
+
              
              {/* External Link Hint */}
              <div className="absolute top-2 right-2 opacity-0 group-hover/image:opacity-100 transition-opacity pointer-events-none">
@@ -152,6 +156,7 @@ const LabResultItem: React.FC<{ lab: any }> = ({ lab }) => {
 const DoctorDashboard: React.FC = () => {
   const navigate = useNavigate();
   const doctorId = localStorage.getItem("userId") ?? "";
+  const [doctorName, setDoctorName] = useState<string>("");
 
   // --- State ---
   const [activeModal, setActiveModal] = useState<'none' | 'request' | 'view'>('none');
@@ -182,7 +187,22 @@ const DoctorDashboard: React.FC = () => {
     load();
   }, [doctorId]);
 
-  
+  useEffect(() => {
+  if (!doctorId) return;
+
+  fetch(`http://localhost:8000/api/doctor/${doctorId}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data?.name) {
+        setDoctorName(data.name);
+      }
+    })
+    .catch(() => {
+      setDoctorName(doctorId); // fallback
+    });
+}, [doctorId]);
+
+
   // -------- Handle Request Creation ----------
   const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,10 +288,20 @@ const renderMedicalData = (data: any) => {
             </div>
           </div>
           
-          <div className="mb-4">
-            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Patient ID</span>
-            <p className="text-2xl font-mono text-white tracking-tight font-bold mt-0.5">{viewPatientId}</p>
-          </div>
+         <div className="mb-4">
+        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">
+          Patient (Pseudonymized)
+        </span>
+
+        <p className="text-xl font-bold text-white">
+          {viewPatientId}
+        </p>
+
+        <p className="text-xs text-slate-500 font-mono mt-1">
+          Access granted via blockchain
+        </p>
+      </div>
+
 
           <div className="grid grid-cols-2 gap-y-3 gap-x-2 border-t border-slate-700/50 pt-4">
             <div>
@@ -430,7 +460,7 @@ const renderMedicalData = (data: any) => {
             <div className="flex items-center text-slate-400 space-x-2">
                <span>Logged in as:</span>
                <span className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/10 rounded text-blue-300 font-semibold text-sm">
-                {doctorId}
+                {doctorName}
               </span>
             </div>
           </div>

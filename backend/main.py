@@ -264,6 +264,16 @@ def uploaded_file(filename):
 
 
 # --------------------------------------------------------------------
+# 9) Doctor info (off-chain)
+# --------------------------------------------------------------------
+@app.route("/api/doctor/<doctor_id>")
+def get_doctor(doctor_id):
+    with open("data/doctors.json") as f:
+        doctors = json.load(f)
+
+    return jsonify(doctors.get(doctor_id, {"name": doctor_id}))
+
+# --------------------------------------------------------------------
 # RUN
 # --------------------------------------------------------------------
 if __name__ == "__main__":

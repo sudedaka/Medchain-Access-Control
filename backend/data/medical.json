@@ -1,145 +1,21 @@
 {
   "PID01": {
     "conditions": [
-      "Type 2 diabetes mellitus",
-      "Asthma",
-      "Acute bronchitis"
-    ],
-    "medications": [
-      "Metformin 500mg BID"
-    ],
-    "allergies": [
-      "Penicillin",
-      "Dust mites"
+      "Asthma"
     ],
     "labs": [
       {
-        "test": "General checkup - Abdominal CT",
-        "date": "2025-12-01T09:15:00+00:00",
-        "result": "see-images",
+        "test": "Chest X-ray",
+        "date": "2025-12-01",
         "images": [
-          "/uploads/2.-CT-Abdomen.jpg"
+          "/uploads/redacted/chest-xray_redacted.jpg"
         ]
       },
       {
-        "test": "General checkup - Chest X-ray",
-        "date": "2025-12-01T09:30:00+00:00",
-        "result": "see-images",
+        "test": "Chest CT",
+        "date": "2025-12-01",
         "images": [
-          "/uploads/chest-xray.jpeg"
-        ]
-      },
-      {
-        "test": "General checkup - Blood Test Summary",
-        "date": "2025-12-01T10:00:00+00:00",
-        "result": "see-images",
-        "images": [
-          "/uploads/blood1.png",
-          "/uploads/blood2.png"
-        ]
-      },
-      {
-        "test": "General checkup - Chest CT",
-        "date": "2025-12-01T10:20:00+00:00",
-        "result": "see-images",
-        "images": [
-          "/uploads/chest-ct.jpg"
-        ]
-      },
-      {
-        "test": "General checkup - Full-body CT",
-        "date": "2025-12-01T10:40:00+00:00",
-        "result": "see-images",
-        "images": [
-          "/uploads/full-body-ct.png"
-        ]
-      }
-    ]
-  },
-
-"PID02": {
-  "conditions": [
-    "Essential hypertension"
-  ],
-  "medications": [
-    "Lisinopril 20mg QD"
-  ],
-  "allergies": [
-    "Latex"
-  ],
-  "labs": [
-    {
-      "test": "CT Scan - Tomography evaluation",
-      "date": "2025-10-10T14:00:00+00:00",
-      "result": "see-images",
-      "images": [
-        "/uploads/tomogrophy.jpg",
-        "/uploads/tomogrophy2.png"
-      ]
-    }
-  ]
-},
-
-  "PID03": {
-    "conditions": [
-      "Family history of diabetes",
-      "Genetic risk evaluation"
-    ],
-    "medications": [],
-    "allergies": [
-      "No known drug allergies"
-    ],
-    "labs": [
-      {
-        "test": "Genetic Panel Screening",
-        "date": "2025-09-05T11:30:00+00:00",
-        "result": "see-images",
-        "images": [
-          "/uploads/genetest1.jpg",
-          "/uploads/genetest2.jpg",
-          "/uploads/genetest3.jpg"
-        ]
-      }
-    ]
-  },
-
-  "PID04": {
-    "conditions": [
-      "Left tibia/fibula fracture"
-    ],
-    "medications": [
-      "Ibuprofen 400mg TID"
-    ],
-    "allergies": [
-      "Morphine"
-    ],
-    "labs": [
-      {
-        "test": "X-ray – Tibia/Fibula fracture evaluation",
-        "date": "2025-07-22T08:20:00+00:00",
-        "result": "see-images",
-        "images": [
-          "/uploads/xray-fracture.jpg"
-        ]
-      }
-    ]
-  },
-
-  "PID05": {
-    "conditions": [
-      "Mild trauma evaluation"
-    ],
-    "medications": [],
-    "allergies": [
-      "Ibuprofen"
-    ],
-    "labs": [
-      {
-        "test": "General X-ray overview",
-        "date": "2025-06-10T16:45:00+00:00",
-        "result": "see-images",
-        "images": [
-          "/uploads/xray3.png"
+          "/uploads/redacted/chest-ct_redacted.jpg"
         ]
       }
     ]
