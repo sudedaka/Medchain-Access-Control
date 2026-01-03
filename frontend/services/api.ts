@@ -80,6 +80,10 @@ export async function getAuthorizedData(patientId: string, doctorId: string) {
     `${API_BASE}/api/patient/${patientId}/data?doctorId=${doctorId}`
   );
 
+   if (!response.ok) {
+    throw new Error("Access denied");
+  }
+
   const data = await response.json();
 
   // Normalize image URLs

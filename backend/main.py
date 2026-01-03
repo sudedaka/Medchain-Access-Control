@@ -244,6 +244,37 @@ def audit(patient_id):
 # --------------------------------------------------------------------
 @app.route("/api/patient/<patient_id>/data")
 def patient_data(patient_id):
+    doctor_id = request.args.get("doctorId")
+    if not doctor_id:
+        return jsonify({"error": "doctorId required"}), 400
+
+    doctor_hash = hash_id(doctor_id)
+    patient_hash = hash_id(patient_id)
+
+    reqs = load_json(REQUESTS_FILE)
+
+    authorized = False
+
+    for block in bc.chain:
+        d = block["data"]
+
+        # 1) Request created for THIS doctor & THIS patient
+        if (
+            d.get("type") == "REQUEST_CREATED"
+            and d.get("doctorHash") == doctor_hash
+            and d.get("patientHash") == patient_hash
+        ):
+            req_id = block["index"]
+
+            # 2) Check if THIS request was approved
+            if get_request_status(req_id) == "approved":
+                authorized = True
+                break
+
+    if not authorized:
+        return jsonify({"error": "Access denied"}), 403
+
+    # Authorized → return data
     identity = load_json(IDENTITY_FILE).get(patient_id, {})
     medical = load_json(MEDICAL_FILE).get(patient_id, {})
 

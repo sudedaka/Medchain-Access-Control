@@ -78,5 +78,17 @@
             "request_block": 5
         },
         "hash": "fa41e34595e99529d26aded758619b57fa14456aabd10e7632c1fc13d23a8262"
+    },
+    {
+        "index": 8,
+        "timestamp": "2026-01-03T12:20:49.333558+00:00",
+        "proof": 405575,
+        "previous_hash": "59b7ad1a2c6bf29697733a85497903dcfd1bc4d7b7fca97d77184e2f99a0617d",
+        "data": {
+            "type": "REQUEST_CREATED",
+            "doctorHash": "043bfecb590086d32559b24f1f3d1f47e0897a1bfc0d7f6a9a6cbe7c3db7046c",
+            "patientHash": "2e2b9195e2e8699f016eaa82b7f98af0b9af6b0aa16fac584a92e0532768406c"
+        },
+        "hash": "1d462bb65f3325a856df8037c22b2a3950d194a6a8ed27a7ceeb9ab7120ef353"
     }
 ]

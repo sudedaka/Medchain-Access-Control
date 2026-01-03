@@ -18,5 +18,10 @@
         "doctorId": "DOC01",
         "patientId": "PID02",
         "createdAt": "2026-01-03T11:56:33.354661+00:00"
+    },
+    "8": {
+        "doctorId": "DOC02",
+        "patientId": "PID01",
+        "createdAt": "2026-01-03T12:20:49.333558+00:00"
     }
 }
