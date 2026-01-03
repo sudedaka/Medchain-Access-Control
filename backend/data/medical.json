@@ -1,7 +1,12 @@
 {
   "PID01": {
     "conditions": [
-      "Asthma"
+      "Asthma",
+      "Type 2 Diabetes Mellitus"
+    ],
+    "allergies": [
+      "Penicillin",
+      "Dust mites"
     ],
     "labs": [
       {
@@ -16,6 +21,20 @@
         "date": "2025-12-01",
         "images": [
           "/uploads/redacted/chest-ct_redacted.jpg"
+        ]
+      },
+      {
+        "test": "Full Body CT",
+        "date": "2025-12-01",
+        "images": [
+          "/uploads/redacted/full-body-ct_redacted.jpg"
+        ]
+      },
+      {
+        "test": "Abdomen CT",
+        "date": "2025-12-01",
+        "images": [
+          "/uploads/redacted/abdomen-ct_redacted.jpg"
         ]
       }
     ]

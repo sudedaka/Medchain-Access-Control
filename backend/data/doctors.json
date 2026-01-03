@@ -1,9 +1,9 @@
 {
-  "doctor1": {
+  "DOC01": {
     "name": "Dr. Alice Smith",
     "department": "Radiology"
   },
-  "doctor2": {
+  "DOC02": {
     "name": "Dr. Robert Chen",
     "department": "Oncology"
   }
